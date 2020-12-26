@@ -47,54 +47,58 @@ const options = {
   },
 };
 
-function LineGraph() {
-  const [data, setData] = useState({});
-
-  // https://disease.sh/v3/..
-
-  // covid-19/historical/all?lastdays=120
-
-  const buildChartData = (data, casesType = "cases") => {
-    let chartData = [];
-    let lastDataPoint;
-    for (let date in data.cases) {
-      if (lastDataPoint) {
-        let newDataPoint = {
-          x: date,
-          y: data[casesType][date] - lastDataPoint,
-        };
-        chartData.push(newDataPoint);
-      }
-      lastDataPoint = data[casesType][date];
+const buildChartData = (data, casesType) => {
+  let chartData = [];
+  let lastDataPoint;
+  for (let date in data.cases) {
+    if (lastDataPoint) {
+      let newDataPoint = {
+        x: date,
+        y: data[casesType][date] - lastDataPoint,
+      };
+      chartData.push(newDataPoint);
     }
-    return chartData;
-  };
+    lastDataPoint = data[casesType][date];
+  }
+  return chartData;
+};
+
+function LineGraph({ casesType }) {
+  const [data, setData] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
       await fetch("https://disease.sh/v3/covid-19/historical/all?lastdays=120")
-        .then((response) => response.json())
+        .then((response) => {
+          return response.json();
+        })
         .then((data) => {
-          console.log(data);
-          const chartData = buildChartData(data, "cases");
+          let chartData = buildChartData(data, casesType);
           setData(chartData);
+          console.log(chartData);
+          // buildChart(chartData);
         });
     };
-    fetchData
-  }, []);
+
+    fetchData();
+  }, [casesType]);
 
   return (
     <div>
-      <h1>Im a graph</h1>
-      <Line
-        options={options}
-        data={{
-          backgroundColor: "rgba(204, 16, 52, 0.5)",
-          borderColor: "#CC1034",
-          datasets: [{ data: data }],
-        }}
-        options
-      />
+      {data?.length > 0 && (
+        <Line
+          data={{
+            datasets: [
+              {
+                backgroundColor: "rgba(204, 16, 52, 0.5)",
+                borderColor: "#CC1034",
+                data: data,
+              },
+            ],
+          }}
+          options={options}
+        />
+      )}
     </div>
   );
 }
