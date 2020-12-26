@@ -32,3 +32,10 @@
   font-size: 0.8rem !important;
   margin-top: 15px !important;
 }
+
+@media (max-width: 428px) {
+  .infoBox {
+    margin-top: 2%;
+    width: 90vw;
+  }
+}

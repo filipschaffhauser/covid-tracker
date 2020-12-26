@@ -49,6 +49,12 @@ body {
   margin-top: 1rem;
 }
 
+@media (max-width: 428px) {
+  .app__stats {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 990px) {
   .app {
     flex-direction: column;
